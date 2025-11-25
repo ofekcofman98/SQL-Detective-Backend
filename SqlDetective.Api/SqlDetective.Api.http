@@ -1,0 +1,6 @@
+@SqlDetective.Api_HostAddress = http://localhost:5216
+
+GET {{SqlDetective.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

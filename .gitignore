@@ -1,0 +1,18 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build results
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+
+# Rider / VS Code
+.idea/
+.vscode/
+
+# Other
+*.tmp
+*.cache
