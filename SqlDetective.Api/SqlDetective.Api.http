@@ -1,6 +1,45 @@
-@SqlDetective.Api_HostAddress = http://localhost:5216
+@host = http://localhost:5216
+###
 
-GET {{SqlDetective.Api_HostAddress}}/weatherforecast/
+### SESSION: Start new session (PC starts game)
+POST {{host}}/api/session
 Accept: application/json
 
 ###
+
+### GAME PROGRESS: Save progress
+POST {{host}}/api/game-progress
+Content-Type: application/json
+Accept: application/json
+
+{
+  "key": "123456",
+  "progress": {
+    "sequenceIndex": 0,
+    "currentMissionIndex": 0,
+    "lives": 3
+  }
+}
+
+###
+
+### GAME PROGRESS: Load progress
+GET {{host}}/api/game-progress?key=123456
+Accept: application/json
+
+###
+
+### QUERY RELAY: Send query (from mobile to server)
+POST {{host}}/api/relay?key=123456
+Content-Type: application/json
+Accept: application/json
+
+"{
+  \"dummy\": \"value\"
+}"
+
+###
+
+### QUERY RELAY: Get next query (PC to server)
+GET {{host}}/api/relay?key=123456
+Accept: application/json

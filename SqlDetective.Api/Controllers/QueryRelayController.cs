@@ -16,21 +16,20 @@ namespace SqlDetective.Api.Controllers
         }
 
         [HttpPost(Name = "query")]
-        public async Task<IActionResult> SendQuery([FromQuery] string key, [FromBody] object queryBody, CancellationToken ct)
+        public async Task<IActionResult> SendQuery([FromQuery] string key, [FromBody] string queryJson, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(key))
             {
                 return BadRequest("Missing Key");
             }
 
-            if (queryBody == null)
+            if (string.IsNullOrWhiteSpace(queryJson))
             {
                 return BadRequest("Missing query payload");
             }
 
-            string queryJson = System.Text.Json.JsonSerializer.Serialize(queryBody);
-
-            var ok = await r_QueryRelayService.SaveIncomingQueryAsync(key, queryJson, ct);
+            bool ok = await r_QueryRelayService.SaveIncomingQueryAsync(key, queryJson, ct);
+          
             if (!ok)
             {
                 return NotFound($"Session with key {key} was not found");
@@ -39,7 +38,7 @@ namespace SqlDetective.Api.Controllers
             return Ok(new { message = "Query stored successfully" });
         }
 
-        [HttpGet("query")]
+        [HttpGet]
         public async Task<IActionResult> GetNextQuery([FromQuery] string key, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(key))
@@ -47,14 +46,14 @@ namespace SqlDetective.Api.Controllers
                 return BadRequest("Missing Key");
             }
 
-            var queryJson = await r_QueryRelayService.GetNextQueryForPcAsync(key, ct);
+            string? queryJson = await r_QueryRelayService.GetNextQueryForPcAsync(key, ct);
 
             if (queryJson == null)
             {
                 return NoContent();
             }
 
-            return Content(queryJson, "application/json");
+            return Ok(queryJson);
         }
     }
 }
