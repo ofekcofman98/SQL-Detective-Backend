@@ -3,11 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlDetective.Api", "SqlDetective.Api\SqlDetective.Api.csproj", "{58E675E8-0A29-45F8-BD9E-495EA3549E18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlDetective.Api", "SqlDetective.Api\SqlDetective.Api.csproj", "{58E675E8-0A29-45F8-BD9E-495EA3549E18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlDetective.Domain", "SqlDetective.Domain\SqlDetective.Domain.csproj", "{673F4A55-310F-4FA6-99ED-DF5A0ED4D4BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlDetective.Domain", "SqlDetective.Domain\SqlDetective.Domain.csproj", "{673F4A55-310F-4FA6-99ED-DF5A0ED4D4BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlDetective.Data", "SqlDetective.Data\SqlDetective.Data.csproj", "{FE48CC5C-0635-40AF-AD6B-A45E380635AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlDetective.Data", "SqlDetective.Data\SqlDetective.Data.csproj", "{FE48CC5C-0635-40AF-AD6B-A45E380635AF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A4A60BEC-C612-4A20-9C33-203737BBFC87}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile.txt = Dockerfile.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

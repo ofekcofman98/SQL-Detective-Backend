@@ -10,10 +10,13 @@ namespace SqlDetective.Api.Controllers
     public class GameProgressController : ControllerBase
     {
         private readonly IGameProgressService r_GameProgressService;
+        private readonly ILogger<GameProgressController> r_Logger;
 
-        public GameProgressController(IGameProgressService i_GameProgressService)
+
+        public GameProgressController(IGameProgressService i_GameProgressService, ILogger<GameProgressController> i_Logger)
         {
             r_GameProgressService = i_GameProgressService;
+            r_Logger = i_Logger;
         }
 
         [HttpPost]

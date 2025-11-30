@@ -24,6 +24,8 @@ namespace SqlDetective.Domain.Sessions.Service
         {
             string key = _keyGenerator.Generate();
 
+            Console.WriteLine($"key is {key}");
+
             GameSession session = new GameSession(key);
 
             return await _sessionRepository.CreateAsync(session, ct);
