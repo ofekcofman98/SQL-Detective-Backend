@@ -6,6 +6,8 @@ using SqlDetective.Domain.Sessions.Repository;
 using SqlDetective.Domain.Sessions.Service;
 using SqlDetective.Domain.Progress.Service;
 using SqlDetective.Domain.Progress.Data;
+using SqlDetective.Data.Postgres;
+using SqlDetective.Domain.Progress.Repository;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,6 +50,15 @@ builder.Services.AddScoped<IQueryRelayService, QueryRelayService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 
 builder.Services.AddScoped<IGameProgressService, GameProgressService>();
+builder.Services.AddScoped<IGameProgressRepository>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    string connString = config.GetConnectionString("SqlDetectiveDatabase");
+    var logger = sp.GetRequiredService<ILogger<PostgresGameProgressRepository>>();
+
+    Console.WriteLine($"[DB] Using connection string: {connString}");
+    return new PostgresGameProgressRepository(connString, logger);
+});
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

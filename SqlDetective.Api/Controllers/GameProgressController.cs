@@ -22,6 +22,8 @@ namespace SqlDetective.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveGame([FromBody] GameProgressSaveRequest gameProgressSaveRequest, CancellationToken ct = default)
         {
+            r_Logger.LogInformation("[GameProgress] [POST] saving game");
+
             if (gameProgressSaveRequest == null)
             {
                 return BadRequest("Missing game progress payload");
@@ -35,6 +37,8 @@ namespace SqlDetective.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> LoadGame([FromQuery] string key, CancellationToken ct = default)
         {
+            r_Logger.LogInformation("[GameProgress] [GET] loading game");
+
             if (string.IsNullOrWhiteSpace(key))
             {
                 return BadRequest("Missing key");

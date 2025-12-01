@@ -11,7 +11,8 @@ namespace SqlDetective.Domain.Progress.Data
     {
         public Guid Id { get; private set; }
         public Guid SessionId { get; private set; }
-        public GameSession Session { get; private set; }
+        //public GameSession Session { get; private set; }
+        public string Key {  get; private set; }
 
         public int SequenceIndex { get; private set; }
         public int MissionIndex { get; private set; }
@@ -21,10 +22,11 @@ namespace SqlDetective.Domain.Progress.Data
 
         private GameProgress() { }
 
-        public GameProgress(Guid i_SessionId, int i_SequenceIndex, int i_MissionIndex, int i_Lives)
+        public GameProgress(string i_Key, /*Guid i_SessionId,*/ int i_SequenceIndex, int i_MissionIndex, int i_Lives)
         {
             Id = Guid.NewGuid();
-            SessionId = i_SessionId;
+            Key = i_Key;
+            //SessionId = i_SessionId;
             SequenceIndex = i_SequenceIndex;
             MissionIndex = i_MissionIndex;
             Lives = i_Lives;
@@ -39,5 +41,26 @@ namespace SqlDetective.Domain.Progress.Data
             UpdatedAt = DateTime.UtcNow;
         }
 
+        public static GameProgress CreateExisting(
+            Guid i_Id,
+            //Guid i_SessionId,
+            string i_Key,
+            int i_SequenceIndex,
+            int i_MissionIndex,
+            int i_Lives,
+            DateTime i_UpdatedAt)
+        {
+            return new GameProgress
+            {
+                Id = i_Id,
+                //SessionId = i_SessionId,
+                Key = i_Key,
+                SequenceIndex = i_SequenceIndex,
+                MissionIndex = i_MissionIndex,
+                Lives = i_Lives,
+                UpdatedAt = i_UpdatedAt
+            };
+
+        }
     }
 }

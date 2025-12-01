@@ -9,7 +9,8 @@ namespace SqlDetective.Domain.Progress.Repository
 {
     public interface IGameProgressRepository
     {
-        Task<GameProgress?> LoadAsync(Guid sessionId, CancellationToken cancellationToken = default);
+        //Task<GameProgress?> LoadAsync(Guid sessionId, CancellationToken cancellationToken = default);
+        Task<GameProgress?> LoadAsync(string key, CancellationToken cancellationToken = default);
         Task SaveAsync(GameProgress progress, CancellationToken cancellationToken = default);
     }
 }

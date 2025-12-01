@@ -10,9 +10,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlDetective.Data", "SqlDetective.Data\SqlDetective.Data.csproj", "{FE48CC5C-0635-40AF-AD6B-A45E380635AF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A4A60BEC-C612-4A20-9C33-203737BBFC87}"
-	ProjectSection(SolutionItems) = preProject
-		Dockerfile.txt = Dockerfile.txt
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

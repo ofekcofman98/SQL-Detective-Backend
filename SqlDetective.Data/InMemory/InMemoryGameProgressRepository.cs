@@ -11,18 +11,18 @@ namespace SqlDetective.Data.InMemory
 {
     public class InMemoryGameProgressRepository : IGameProgressRepository
     {
-        private readonly ConcurrentDictionary<Guid, GameProgress> r_GamesDict = new ConcurrentDictionary<Guid, GameProgress>();
+        private readonly ConcurrentDictionary<string, GameProgress> r_GamesDict = new ConcurrentDictionary<string, GameProgress>();
         
-        public Task<GameProgress?> LoadAsync(Guid sessionId, CancellationToken cancellationToken = default)
+        public Task<GameProgress?> LoadAsync(string key, CancellationToken cancellationToken = default)
         {
-            r_GamesDict.TryGetValue(sessionId, out GameProgress? o_GameProgress);
+            r_GamesDict.TryGetValue(key, out GameProgress? o_GameProgress);
             
             return Task.FromResult(o_GameProgress);
         }
 
         public Task SaveAsync(GameProgress progress, CancellationToken cancellationToken = default)
         {
-            r_GamesDict[progress.SessionId] = progress;
+            r_GamesDict[progress.Key] = progress;
             return Task.CompletedTask;
         }
     }
