@@ -16,3 +16,5 @@ obj/
 # Other
 *.tmp
 *.cache
+
+appsettings.Development.json
