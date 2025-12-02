@@ -1,4 +1,4 @@
-**SQL Detective**
+***SQL Detective***
 
 SQL Detective is a cross-platform detective investigation game where players solve cases using SQL queries.
 The game is built in Unity (PC + Mobile) and communicates with a custom .NET backend and Supabase PostgreSQL database.
