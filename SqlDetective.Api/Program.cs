@@ -8,9 +8,24 @@ using SqlDetective.Domain.Progress.Service;
 using SqlDetective.Domain.Progress.Data;
 using SqlDetective.Data.Postgres;
 using SqlDetective.Domain.Progress.Repository;
+using SqlDetective.Data.Postgres.Schema;
+using SqlDetective.Domain.Schema.Service;
+using SqlDetective.Data.Postgres.Case;
+using SqlDetective.Domain.Cases.Service;
+using SqlDetective.Data.Postgres.Persons;
+using SqlDetective.Domain.Persons.Service;
+using SqlDetective.Data.Postgres.Query;
+using SqlDetective.Domain.Query.Service;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<SupabaseOptions>(builder.Configuration.GetSection("Supabase"));
+builder.Services.AddHttpClient<ISupabaseSchemaClient, SupabaseSchemaClient>();
+builder.Services.AddHttpClient<ICaseService, SupabaseCaseService>();
+builder.Services.AddHttpClient<IPersonService, SupabasePersonService>();
+builder.Services.AddScoped<ISchemaService, SupabaseSchemaService>();
 
 // Add services to the container.
 
@@ -48,6 +63,7 @@ builder.Services.AddSingleton<IKeyGenerator, RandomKeyGenerator>();
 // Domain services
 builder.Services.AddScoped<IQueryRelayService, QueryRelayService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<IQueryExecutionService, PostgresQueryExecutionService>();
 
 builder.Services.AddScoped<IGameProgressService, GameProgressService>();
 builder.Services.AddScoped<IGameProgressRepository>(sp =>
