@@ -9,6 +9,6 @@ namespace SqlDetective.Domain.Schema.Data
     [Serializable]
     public class SchemaDto
     {
-        public List<TableDto> Tables { get; set; }
+        public List<TableDto> Tables { get; set; } = new List<TableDto>();
     }
 }

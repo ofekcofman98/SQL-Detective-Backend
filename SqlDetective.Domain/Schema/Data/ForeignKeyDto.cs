@@ -9,10 +9,10 @@ namespace SqlDetective.Domain.Schema.Data
     [Serializable]
     public class ForeignKeyDto
     {
-        public string FromTable { get; set; }
-        public string ToTable { get; set; }
-        public string FromColumn { get; set; }
-        public string ToColumn { get; set; }
+        public string FromTable { get; set; } = string.Empty;
+        public string ToTable { get; set; } = string.Empty;
+        public string FromColumn { get; set; } = string.Empty;
+        public string ToColumn { get; set; } = string.Empty;
 
     }
 }

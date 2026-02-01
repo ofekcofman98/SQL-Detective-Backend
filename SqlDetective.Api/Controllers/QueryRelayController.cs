@@ -51,7 +51,7 @@ namespace SqlDetective.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetNextQuery([FromQuery] string key, CancellationToken ct)
         {
-            r_Logger.LogInformation("[QueryRelay] [GET] starting GetNextQuery");
+            //r_Logger.LogInformation("[QueryRelay] [GET] starting GetNextQuery");
 
             if (string.IsNullOrEmpty(key))
             {

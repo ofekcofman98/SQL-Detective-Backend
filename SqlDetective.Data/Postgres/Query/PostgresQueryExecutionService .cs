@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using SqlDetective.Domain.Query.Service;
@@ -16,17 +17,23 @@ namespace SqlDetective.Data.Postgres.Query
         private readonly string r_ConnectionString;
         private readonly ISessionRepository r_SessionRepository;
 
+        private readonly ILogger<PostgresQueryExecutionService> r_Logger;
+
         public PostgresQueryExecutionService(
             IConfiguration configuration,
-            ISessionRepository sessionRepository)
+            ISessionRepository sessionRepository,
+            ILogger<PostgresQueryExecutionService> logger)
         {
             r_ConnectionString = configuration.GetConnectionString("SqlDetectiveDatabase")
                 ?? throw new InvalidOperationException("Missing connection string 'SqlDetectiveDatabase'");
             r_SessionRepository = sessionRepository;
+            r_Logger = logger;
         }
 
         public async Task<JArray> ExecuteAsync(string sessionKey, string sql, CancellationToken ct = default)
         {
+            r_Logger.LogInformation("[QueryExecution] SessionKey={SessionKey}, SQL:\n{Sql}", sessionKey, sql);
+
             if (string.IsNullOrWhiteSpace(sessionKey))
             {
                 throw new ArgumentException("sessionKey cannot be empty", nameof(sessionKey));
