@@ -17,7 +17,7 @@ namespace SqlDetective.Api.Controllers
         private readonly IQueryExecutionService r_QueryExecutionService;
         private readonly ILogger<QueryRelayController> r_Logger;
 
-        public QueryRelayController(IQueryRelayService i_QueryRelayService, ILogger<QueryRelayController> i_Logger, PostgresQueryExecutionService i_QueryExecutionService)
+        public QueryRelayController(IQueryRelayService i_QueryRelayService, ILogger<QueryRelayController> i_Logger, IQueryExecutionService i_QueryExecutionService)
         {
             r_QueryRelayService = i_QueryRelayService;
             r_QueryExecutionService = i_QueryExecutionService;
