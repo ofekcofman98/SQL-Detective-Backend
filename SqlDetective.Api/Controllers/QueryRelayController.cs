@@ -60,17 +60,22 @@ namespace SqlDetective.Api.Controllers
 
       if (string.IsNullOrEmpty(key)) return BadRequest("Missing Key");
 
-      string? sqlQuery = await r_QueryRelayService.GetNextQueryForPcAsync(key, ct);
+      string? queryJson = await r_QueryRelayService.GetNextQueryForPcAsync(key, ct);
+      if (queryJson == null) return NoContent();
 
+      // כאן הקסם: במקום להחזיר רק את ה-JSON הגולמי, 
+      // אנחנו נריץ את ה-SQL ונצרף את התוצאות ל-JSON
+      JObject queryObj = JObject.Parse(queryJson);
+      string sql = queryObj["QueryString"]?.ToString() ?? "";
 
-      if (sqlQuery == null)
+      if (!string.IsNullOrEmpty(sql))
       {
-        return NoContent(); // אין שאילתה חדשה כרגע
+        JArray results = await r_QueryExecutionService.ExecuteAsync(key, sql, ct);
+        queryObj["Results"] = results; // אנחנו מוסיפים שדה חדש ל-JSON הקיים
       }
-      JArray queryResults = await r_QueryExecutionService.ExecuteAsync(key, sqlQuery, ct);
 
-      return Ok(queryResults);
+      return Content(queryObj.ToString(), "application/json");
       //return Content(queryJson, "application/json");
-      }
+    }
     }
 }
