@@ -40,13 +40,13 @@ namespace SqlDetective.Data.Postgres.Session
 
     public async Task<GameSession?> GetByKeyAsync(string key, CancellationToken cancellationToken = default)
     {
-      using var conn = new NpgsqlConnection(_connectionString);
+      await using var conn = new NpgsqlConnection(_connectionString);
       await conn.OpenAsync(cancellationToken);
 
-      using var cmd = new NpgsqlCommand("SELECT id, key, pc_connected, mobile_connected FROM sessions WHERE key = @key", conn);
+      await using var cmd = new NpgsqlCommand("SELECT id, key, pc_connected, mobile_connected FROM sessions WHERE key = @key", conn);
       cmd.Parameters.AddWithValue("key", key);
 
-      using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+      await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
       if (await reader.ReadAsync(cancellationToken))
       {
         var session = new GameSession(reader.GetString(1));
