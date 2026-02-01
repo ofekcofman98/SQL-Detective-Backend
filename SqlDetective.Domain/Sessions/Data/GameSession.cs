@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -40,5 +40,14 @@ namespace SqlDetective.Domain.Sessions.Data
             }
         }
 
+    public GameSession(Guid id, string key, bool pcConnected, bool mobileConnected)
+    {
+      Id = id;
+      Key = key;
+      PcConnected = pcConnected;
+      MobileConnected = mobileConnected;
     }
+
+
+  }
 }
