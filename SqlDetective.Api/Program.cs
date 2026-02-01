@@ -65,7 +65,7 @@ builder.Services.AddSingleton<IKeyGenerator, RandomKeyGenerator>();
 builder.Services.AddScoped<IQueryRelayService, QueryRelayService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IQueryExecutionService, PostgresQueryExecutionService>();
-builder.Services.AddScoped<IQueryExecutionService, PostgresQueryExecutionService>();
+
 
 builder.Services.AddScoped<IGameProgressService, GameProgressService>();
 builder.Services.AddScoped<IGameProgressRepository>(sp =>
