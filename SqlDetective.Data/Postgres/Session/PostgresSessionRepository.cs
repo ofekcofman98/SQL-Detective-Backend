@@ -8,15 +8,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace SqlDetective.Data.Postgres.Session
 {
   public class PostgresSessionRepository : ISessionRepository
   {
     private readonly string _connectionString;
+    private readonly ILogger<PostgresSessionRepository> _logger;
 
-    public PostgresSessionRepository(IConfiguration configuration)
+
+    public PostgresSessionRepository(IConfiguration configuration, ILogger<PostgresSessionRepository> logger)
     {
+      _logger = logger;
+
       _connectionString = configuration.GetConnectionString("SqlDetectiveDatabase")
           ?? throw new InvalidOperationException("Missing connection string");
     }
@@ -40,18 +46,30 @@ namespace SqlDetective.Data.Postgres.Session
 
     public async Task<GameSession?> GetByKeyAsync(string key, CancellationToken cancellationToken = default)
     {
-      await using var conn = new NpgsqlConnection(_connectionString);
-      await conn.OpenAsync(cancellationToken);
+      const string sql = "SELECT id, key, pc_connected, mobile_connected FROM sessions WHERE key = @key LIMIT 1";
 
-      await using var cmd = new NpgsqlCommand("SELECT id, key, pc_connected, mobile_connected FROM sessions WHERE key = @key", conn);
-      cmd.Parameters.AddWithValue("key", key);
-
-      await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-      if (await reader.ReadAsync(cancellationToken))
+      try
       {
-        var session = new GameSession(reader.GetString(1));
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync(cancellationToken);
 
-        return session;
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("key", key);
+
+        await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+
+        if (await reader.ReadAsync(cancellationToken))
+        {
+          var id = reader.GetGuid(0);
+          var sessionKey = reader.GetString(1);
+
+          return new GameSession(sessionKey);
+        }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "Timeout or Error in GetByKeyAsync for key {Key}", key);
+        throw;
       }
 
       return null;
