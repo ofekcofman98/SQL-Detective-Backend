@@ -17,6 +17,7 @@ using SqlDetective.Domain.Persons.Service;
 using SqlDetective.Data.Postgres.Query;
 using SqlDetective.Domain.Query.Service;
 using SqlDetective.Data.Postgres.Session;
+using SqlDetective.Domain.Sessions;
 
 
 
@@ -65,6 +66,7 @@ builder.Services.AddSingleton<IKeyGenerator, RandomKeyGenerator>();
 builder.Services.AddScoped<IQueryRelayService, QueryRelayService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IQueryExecutionService, PostgresQueryExecutionService>();
+builder.Services.AddSingleton<ISessionCache, InMemorySessionCache>();
 
 
 builder.Services.AddScoped<IGameProgressService, GameProgressService>();

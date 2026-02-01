@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,25 +13,32 @@ namespace SqlDetective.Domain.Sessions.Service
     {
         private readonly ISessionRepository _sessionRepository;
         private readonly IKeyGenerator _keyGenerator;
+        private readonly ISessionCache _sessionCache;
 
-        public SessionService(ISessionRepository i_SessionRepository, IKeyGenerator i_KeyGenerator)
+    public SessionService(ISessionRepository i_SessionRepository, IKeyGenerator i_KeyGenerator, ISessionCache sessionCache)
         {
             _sessionRepository = i_SessionRepository;
             _keyGenerator = i_KeyGenerator;
+      _sessionCache = sessionCache;
         }
 
         public async Task<GameSession> CreateSessionAsync(CancellationToken ct = default)
         {
-            string key = _keyGenerator.Generate();
+          string key = _keyGenerator.Generate();
 
-            Console.WriteLine($"key is {key}");
+          Console.WriteLine($"key is {key}");
 
-            GameSession session = new GameSession(key);
+          GameSession session = new GameSession(key);
 
-            return await _sessionRepository.CreateAsync(session, ct);
+          var createdSession = await _sessionRepository.CreateAsync(session, ct);
+
+          _sessionCache.Store(createdSession.Key, createdSession.Id);
+
+          return createdSession;
+
         }
 
-        public async Task<GameSession?> GetGameSessionAsync(string i_Key, CancellationToken ct = default)
+    public async Task<GameSession?> GetGameSessionAsync(string i_Key, CancellationToken ct = default)
         {
             return await _sessionRepository.GetByKeyAsync(i_Key, ct);
         }

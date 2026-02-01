@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SqlDetective.Domain.Sessions.Service;
@@ -13,7 +13,6 @@ namespace SqlDetective.Api.Controllers
     {
         private readonly ISessionService r_SessionService;
         private readonly ILogger<SessionController> r_Logger;
-
 
         public SessionController(ISessionService i_SessionService, ILogger<SessionController> i_Logger)
         {
