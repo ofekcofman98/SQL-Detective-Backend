@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Npgsql;
@@ -58,22 +58,31 @@ namespace SqlDetective.Data.Postgres.Query
 
             var result = new JArray();
 
-            while (await reader.ReadAsync(ct))
+        while (await reader.ReadAsync(ct))
+        {
+          var obj = new JObject();
+
+          for (int i = 0; i < reader.FieldCount; i++)
+          {
+            string name = reader.GetName(i);
+
+            // שליפה בטוחה של הערך
+            if (reader.IsDBNull(i))
             {
-                var obj = new JObject();
-
-                for (int i = 0; i < reader.FieldCount; i++)
-                {
-                    string name = reader.GetName(i);
-                    object value = reader.IsDBNull(i) ? null : reader.GetValue(i);
-
-                    obj[name] = value == null ? JValue.CreateNull() : JToken.FromObject(value);
-                }
-
-                result.Add(obj);
+              obj[name] = null;
             }
+            else
+            {
+              var value = reader.GetValue(i);
 
-            return result;
+              // המרה ל-JToken בצורה פשוטה כדי שיוניטי תזהה את זה כערך רגיל (סטרינג/מספר)
+              obj[name] = JToken.FromObject(value);
+            }
+          }
+
+          result.Add(obj);
+        }
+      return result;
         }
     }
 }
