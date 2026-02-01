@@ -104,4 +104,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+//app.UseWelcomePage();
+app.MapGet("/", () => "API is running! Use /api/persons to get data.");
+app.MapGet("/test", () => "Server is alive and routing works!"); 
+
 app.Run();
