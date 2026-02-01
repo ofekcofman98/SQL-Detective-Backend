@@ -34,55 +34,45 @@ namespace SqlDetective.Data.Postgres.Query
         {
             r_Logger.LogInformation("[QueryExecution] SessionKey={SessionKey}, SQL:\n{Sql}", sessionKey, sql);
 
-            if (string.IsNullOrWhiteSpace(sessionKey))
-            {
-                throw new ArgumentException("sessionKey cannot be empty", nameof(sessionKey));
-            }
-
-            if (string.IsNullOrWhiteSpace(sql))
-            {
-                throw new ArgumentException("sql cannot be empty", nameof(sql));
-            }
-
+            if (string.IsNullOrWhiteSpace(sessionKey)) throw new ArgumentException("sessionKey cannot be empty");
+            if (string.IsNullOrWhiteSpace(sql)) throw new ArgumentException("sql cannot be empty");
+ 
             var session = await r_SessionRepository.GetByKeyAsync(sessionKey, ct);
-            if (session == null)
-            {
-                throw new InvalidOperationException($"Session with key {sessionKey} was not found");
-            }
 
-            using var conn = new NpgsqlConnection(r_ConnectionString);
-            await conn.OpenAsync(ct);
-
-            using var cmd = new NpgsqlCommand(sql, conn);
-            using var reader = await cmd.ExecuteReaderAsync(ct);
+            if (session == null) throw new InvalidOperationException($"Session {sessionKey} not found");
 
             var result = new JArray();
 
-        while (await reader.ReadAsync(ct))
-        {
-          var obj = new JObject();
-
-          for (int i = 0; i < reader.FieldCount; i++)
-          {
-            string name = reader.GetName(i);
-
-            // שליפה בטוחה של הערך
-            if (reader.IsDBNull(i))
+            try
             {
-              obj[name] = null;
-            }
-            else
-            {
-              var value = reader.GetValue(i);
+              await using var conn = new NpgsqlConnection(r_ConnectionString);
+              await conn.OpenAsync(ct);
 
-              // המרה ל-JToken בצורה פשוטה כדי שיוניטי תזהה את זה כערך רגיל (סטרינג/מספר)
-              obj[name] = JToken.FromObject(value);
+              await using var cmd = new NpgsqlCommand(sql, conn);
+              cmd.CommandTimeout = 10;
+
+              await using var reader = await cmd.ExecuteReaderAsync(ct);
+
+              while (await reader.ReadAsync(ct))
+              {
+                var obj = new JObject();
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                  string name = reader.GetName(i);
+                  var value = reader.IsDBNull(i) ? null : reader.GetValue(i);
+                  obj[name] = value != null ? JToken.FromObject(value) : JValue.CreateNull();
+                }
+                result.Add(obj);
+              }
             }
+            catch (NpgsqlException ex)
+            {
+              r_Logger.LogError(ex, "SQL Execution Error for session {SessionKey}", sessionKey);
+              var errorObj = new JObject { ["error"] = ex.Message };
+              result.Add(errorObj);
+            }
+
+            return result;
           }
-
-          result.Add(obj);
-        }
-      return result;
-        }
     }
 }
