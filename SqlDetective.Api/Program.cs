@@ -16,6 +16,7 @@ using SqlDetective.Data.Postgres.Persons;
 using SqlDetective.Domain.Persons.Service;
 using SqlDetective.Data.Postgres.Query;
 using SqlDetective.Domain.Query.Service;
+using SqlDetective.Data.Postgres.Session;
 
 
 
@@ -54,7 +55,7 @@ builder.Services.AddCors(options =>
 // =====================
 
 // Repositories (InMemory)
-builder.Services.AddSingleton<ISessionRepository, InMemorySessionRepository>();
+builder.Services.AddSingleton<ISessionRepository, PostgresSessionRepository>();
 builder.Services.AddSingleton<IRelayQueryRepository, InMemoryRelayQueryRepository>();
 
 // DI

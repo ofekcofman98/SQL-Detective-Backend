@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SqlDetective.Domain.Query.Service;
 using Microsoft.Extensions.Logging;
@@ -20,8 +20,9 @@ namespace SqlDetective.Api.Controllers
             r_Logger = i_Logger;
         }
 
-        [HttpPost(Name = "query")]
-        public async Task<IActionResult> SendQuery([FromQuery] string key, [FromBody] JsonElement queryBody, CancellationToken ct)
+        //[HttpPost(Name = "query")]
+    [HttpPost]
+    public async Task<IActionResult> SendQuery([FromQuery] string key, [FromBody] JsonElement queryBody, CancellationToken ct)
         {
             r_Logger.LogInformation("[QueryRelay] [POST] starting SendQuery");
             //r_Logger.LogInformation($"input: {queryJson}");
