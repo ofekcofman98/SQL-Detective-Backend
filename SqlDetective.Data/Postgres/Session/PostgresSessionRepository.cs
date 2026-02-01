@@ -29,22 +29,30 @@ namespace SqlDetective.Data.Postgres.Session
 
     public async Task<GameSession> CreateAsync(GameSession session, CancellationToken cancellationToken = default)
     {
-      using var conn = new NpgsqlConnection(_connectionString);
-      await conn.OpenAsync(cancellationToken);
+      try
+      {
+        using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync(cancellationToken);
 
-      using var cmd = new NpgsqlCommand(
-          "INSERT INTO sessions (id, key, pc_connected, mobile_connected) VALUES (@id, @key, @pc, @mobile)", conn);
+        using var cmd = new NpgsqlCommand(
+            "INSERT INTO sessions (id, key, pc_connected, mobile_connected) VALUES (@id, @key, @pc, @mobile)", conn);
 
-      cmd.Parameters.AddWithValue("id", session.Id);
-      cmd.Parameters.AddWithValue("key", session.Key);
-      cmd.Parameters.AddWithValue("pc", session.PcConnected);
-      cmd.Parameters.AddWithValue("mobile", session.MobileConnected);
+        cmd.Parameters.AddWithValue("id", session.Id);
+        cmd.Parameters.AddWithValue("key", session.Key);
+        cmd.Parameters.AddWithValue("pc", session.PcConnected);
+        cmd.Parameters.AddWithValue("mobile", session.MobileConnected);
 
-      await cmd.ExecuteNonQueryAsync(cancellationToken);
-      return session;
+        await cmd.ExecuteNonQueryAsync(cancellationToken);
+        return session;
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"[DB ERROR] CreateSession failed: {ex.Message}");
+        throw;
+      }
     }
 
-    public async Task<GameSession?> GetByKeyAsync(string key, CancellationToken cancellationToken = default)
+      public async Task<GameSession?> GetByKeyAsync(string key, CancellationToken cancellationToken = default)
     {
       const string sql = "SELECT id, key, pc_connected, mobile_connected FROM sessions WHERE key = @key LIMIT 1";
 
