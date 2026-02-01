@@ -46,9 +46,14 @@ namespace SqlDetective.Data.Postgres.Query
             try
             {
               await using var conn = new NpgsqlConnection(r_ConnectionString);
-              await conn.OpenAsync(ct);
 
-              await using var cmd = new NpgsqlCommand(sql, conn);
+        r_Logger.LogInformation("[DB] Opening connection...");
+
+        await conn.OpenAsync();
+
+        r_Logger.LogInformation("[DB] Connection opened");
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
               cmd.CommandTimeout = 10;
 
               await using var reader = await cmd.ExecuteReaderAsync(ct);

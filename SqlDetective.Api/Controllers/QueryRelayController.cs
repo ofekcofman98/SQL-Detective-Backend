@@ -56,22 +56,19 @@ namespace SqlDetective.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetNextQuery([FromQuery] string key, CancellationToken ct)
         {
-      //r_Logger.LogInformation("[QueryRelay] [GET] starting GetNextQuery");
 
       if (string.IsNullOrEmpty(key)) return BadRequest("Missing Key");
 
       string? queryJson = await r_QueryRelayService.GetNextQueryForPcAsync(key, ct);
       if (queryJson == null) return NoContent();
 
-      // כאן הקסם: במקום להחזיר רק את ה-JSON הגולמי, 
-      // אנחנו נריץ את ה-SQL ונצרף את התוצאות ל-JSON
       JObject queryObj = JObject.Parse(queryJson);
       string sql = queryObj["QueryString"]?.ToString() ?? "";
 
       if (!string.IsNullOrEmpty(sql))
       {
         JArray results = await r_QueryExecutionService.ExecuteAsync(key, sql, ct);
-        queryObj["Results"] = results; // אנחנו מוסיפים שדה חדש ל-JSON הקיים
+        queryObj["Results"] = results; 
       }
 
       return Content(queryObj.ToString(), "application/json");
