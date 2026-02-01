@@ -44,7 +44,7 @@ namespace SqlDetective.Api.Controllers
           {
             _saveGameSemaphore.Release();
           }
-        }
+        } 
 
     [HttpGet]
         public async Task<IActionResult> LoadGame([FromQuery] string key, CancellationToken ct = default)
