@@ -16,8 +16,9 @@ namespace SqlDetective.Api.Controllers
         private readonly IQueryRelayService r_QueryRelayService;
         private readonly IQueryExecutionService r_QueryExecutionService;
         private readonly ILogger<QueryRelayController> r_Logger;
+    private static readonly SemaphoreSlim _queryExecutionSemaphore = new SemaphoreSlim(1, 1);
 
-        public QueryRelayController(IQueryRelayService i_QueryRelayService, ILogger<QueryRelayController> i_Logger, IQueryExecutionService i_QueryExecutionService)
+    public QueryRelayController(IQueryRelayService i_QueryRelayService, ILogger<QueryRelayController> i_Logger, IQueryExecutionService i_QueryExecutionService)
         {
             r_QueryRelayService = i_QueryRelayService;
             r_QueryExecutionService = i_QueryExecutionService;
@@ -67,8 +68,16 @@ namespace SqlDetective.Api.Controllers
 
       if (!string.IsNullOrEmpty(sql))
       {
-        JArray results = await r_QueryExecutionService.ExecuteAsync(key, sql, ct);
-        queryObj["Results"] = results; 
+        await _queryExecutionSemaphore.WaitAsync(ct);
+        try
+        {
+          JArray results = await r_QueryExecutionService.ExecuteAsync(key, sql, ct);
+          queryObj["Results"] = results;
+        }
+        finally
+        {
+          _queryExecutionSemaphore.Release();
+        }
       }
 
       return Content(queryObj.ToString(), "application/json");
