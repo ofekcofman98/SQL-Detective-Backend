@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SqlDetective.Domain.Progress.Data;
 using SqlDetective.Domain.Progress.Service;
@@ -11,9 +11,9 @@ namespace SqlDetective.Api.Controllers
     {
         private readonly IGameProgressService r_GameProgressService;
         private readonly ILogger<GameProgressController> r_Logger;
+    private static readonly SemaphoreSlim _saveGameSemaphore = new SemaphoreSlim(1, 1);
 
-
-        public GameProgressController(IGameProgressService i_GameProgressService, ILogger<GameProgressController> i_Logger)
+    public GameProgressController(IGameProgressService i_GameProgressService, ILogger<GameProgressController> i_Logger)
         {
             r_GameProgressService = i_GameProgressService;
             r_Logger = i_Logger;
@@ -22,19 +22,31 @@ namespace SqlDetective.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveGame([FromBody] GameProgressSaveRequest gameProgressSaveRequest, CancellationToken ct = default)
         {
-            r_Logger.LogInformation("[GameProgress] [POST] saving game");
+          r_Logger.LogInformation("[GameProgress] [POST] saving game");
 
-            if (gameProgressSaveRequest == null)
-            {
-                return BadRequest("Missing game progress payload");
-            }
+          if (gameProgressSaveRequest == null)
+          {
+            return BadRequest("Missing game progress payload");
+          }
 
+          await _saveGameSemaphore.WaitAsync(ct);
+          try
+          {
             await r_GameProgressService.SaveAsync(gameProgressSaveRequest, ct);
-
             return Ok(new { message = "Progress saved" });
+          }
+          catch (Exception ex)
+          {
+            r_Logger.LogError(ex, "SaveGame failed");
+            return StatusCode(500, "Failed to save game progress");
+          }
+          finally
+          {
+            _saveGameSemaphore.Release();
+          }
         }
 
-        [HttpGet]
+    [HttpGet]
         public async Task<IActionResult> LoadGame([FromQuery] string key, CancellationToken ct = default)
         {
             r_Logger.LogInformation("[GameProgress] [GET] loading game");
