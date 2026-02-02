@@ -76,6 +76,6 @@ The game is built in Unity (PC + Mobile) and communicates with a custom .NET bac
 **🚀 Play the Game**
 🎥 Gameplay Demo: https://youtu.be/9zejBFtsaI8
 
-🕹️ Play on Itch.io (PC + Mobile) : https://sql-detective.itch.io/sql-detective
+🕹️ Play on Itch.io (PC + Mobile) : https://ofekcofman98.itch.io/sql-detective-real
 
 Mobile play requires pairing with a PC via unique session key.
