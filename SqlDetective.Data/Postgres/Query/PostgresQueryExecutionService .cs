@@ -75,7 +75,9 @@ namespace SqlDetective.Data.Postgres.Query
                     obj[name] = JToken.FromObject(value);
                   }
                 }
-                result.Add(obj);
+          r_Logger.LogInformation("[DB_RESULT_ROW] {RowJson}", obj.ToString(Newtonsoft.Json.Formatting.None));
+
+          result.Add(obj);
               }
             }
             catch (NpgsqlException ex)
