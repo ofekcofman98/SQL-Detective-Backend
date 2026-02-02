@@ -18,7 +18,7 @@ using SqlDetective.Data.Postgres.Query;
 using SqlDetective.Domain.Query.Service;
 using SqlDetective.Data.Postgres.Session;
 using SqlDetective.Domain.Sessions;
-
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,10 +34,19 @@ builder.Services.AddScoped<ISchemaService, SupabaseSchemaService>();
 //builder.Services.AddControllers();
 
 builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
-    });
+    .AddNewtonsoftJson(); // שימוש ב-NewtonsoftJson מבטיח ש-List<Dictionary> ו-JArray יעברו תקין ליוניטי
+
+builder.Services.AddCors(options =>
+{
+  options.AddPolicy("AllowUnityClients", policy =>
+  {
+    policy
+        .AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+  });
+});
+
 
 builder.Services.AddCors(options =>
 {

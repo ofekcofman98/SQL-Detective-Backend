@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using SqlDetective.Domain.Query.Data;
@@ -36,7 +36,7 @@ namespace SqlDetective.Api.Controllers
 
             try
             {
-                JArray rows = await r_QueryExecutionService.ExecuteAsync(request.Key, request.Sql, ct);
+                var rows = await r_QueryExecutionService.ExecuteAsync(request.Key, request.Sql, ct);
                 return Ok(rows);
             }
             catch (InvalidOperationException ex)

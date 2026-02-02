@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +10,8 @@ namespace SqlDetective.Domain.Query.Service
 {
     public interface IQueryExecutionService
     {
-        Task<JArray> ExecuteAsync(string sessionKey, string sql, CancellationToken ct = default);
-    }
+    //Task<JArray> ExecuteAsync(string sessionKey, string sql, CancellationToken ct = default);
+    Task<List<Dictionary<string, object>>> ExecuteAsync(string sessionKey, string sql, CancellationToken ct = default);
+
+  }
 }
