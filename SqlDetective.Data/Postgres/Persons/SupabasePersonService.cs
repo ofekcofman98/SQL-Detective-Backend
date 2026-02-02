@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using SqlDetective.Data.Postgres.Schema;
 using SqlDetective.Domain.Persons.Data;
 using SqlDetective.Domain.Persons.Service;
@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using SqlDetective.Domain.Persons;
 
 namespace SqlDetective.Data.Postgres.Persons
 {
@@ -17,19 +18,24 @@ namespace SqlDetective.Data.Postgres.Persons
     {
         private readonly HttpClient r_HttpClient;
         private readonly SupabaseOptions r_Options;
+    private readonly IPersonCache r_Cache;
 
-        private const string k_PersonsTable = "Persons";
+    private const string k_PersonsTable = "Persons";
 
-        public SupabasePersonService(HttpClient httpClient, IOptions<SupabaseOptions> options)
+        public SupabasePersonService(HttpClient httpClient, IOptions<SupabaseOptions> options, IPersonCache i_Cache)
         {
             r_HttpClient = httpClient;
             r_Options = options.Value;
+            r_Cache = i_Cache;
         }
 
 
         public async Task<IReadOnlyList<PersonDto>> GetAllAsync(CancellationToken ct = default)
         {
-            string url = $"{r_Options.Url}/rest/v1/{k_PersonsTable}?select=*";
+      var cached = r_Cache.GetPersons();
+      if (cached != null) return cached;
+      
+      string url = $"{r_Options.Url}/rest/v1/{k_PersonsTable}?select=*";
 
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             request.Headers.Add("apikey", r_Options.ApiKey);
@@ -58,7 +64,8 @@ namespace SqlDetective.Data.Postgres.Persons
                     PrefabId = obj["prefab_id"]?.ToString()
                 });
             }
-
+            r_Cache.Store(result);
+            
             return result;
         }
     }

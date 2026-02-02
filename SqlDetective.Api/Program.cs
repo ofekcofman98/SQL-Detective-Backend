@@ -20,6 +20,7 @@ using SqlDetective.Data.Postgres.Session;
 using SqlDetective.Domain.Sessions;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using SqlDetective.Domain.Schema;
+using SqlDetective.Domain.Persons;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -68,7 +69,6 @@ builder.Services.AddCors(options =>
 // Repositories (InMemory)
 builder.Services.AddSingleton<ISessionRepository, PostgresSessionRepository>();
 builder.Services.AddSingleton<IRelayQueryRepository, InMemoryRelayQueryRepository>();
-builder.Services.AddSingleton<ISchemaCache, InMemorySchemaCache>();
 
 // DI
 builder.Services.AddSingleton<IKeyGenerator, RandomKeyGenerator>();
@@ -77,6 +77,11 @@ builder.Services.AddSingleton<IKeyGenerator, RandomKeyGenerator>();
 builder.Services.AddScoped<IQueryRelayService, QueryRelayService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IQueryExecutionService, PostgresQueryExecutionService>();
+
+// Cache
+
+builder.Services.AddSingleton<ISchemaCache, InMemorySchemaCache>();
+builder.Services.AddSingleton<IPersonCache, InMemoryPersonCache>();
 builder.Services.AddSingleton<ISessionCache, InMemorySessionCache>();
 
 
