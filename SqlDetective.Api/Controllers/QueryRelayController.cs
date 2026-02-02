@@ -63,29 +63,36 @@ namespace SqlDetective.Api.Controllers
       string? queryJson = await r_QueryRelayService.GetNextQueryForPcAsync(key, ct);
       if (queryJson == null) return NoContent();
 
-      JObject queryObj = JObject.Parse(queryJson);
-      string sql = queryObj["QueryString"]?.ToString() ?? "";
-
-      if (!string.IsNullOrEmpty(sql))
-      {
-        await _queryExecutionSemaphore.WaitAsync(ct);
-        try
-        {
-          // 1. קריאה לשירות שמחזיר עכשיו List<Dictionary<string, object>>
-          var results = await r_QueryExecutionService.ExecuteAsync(key, sql, ct);
-
-          // 2. המרה של הרשימה ל-JToken כדי ש-Newtonsoft יוכל להכניס אותה ל-queryObj
-          // זה פותר את שגיאת הקומפילציה CS0029
-          queryObj["Results"] = JToken.FromObject(results);
-        }
-        finally
-        {
-          _queryExecutionSemaphore.Release();
-        }
-      }
-
-      return Content(queryObj.ToString(), "application/json");
+      return Content(queryJson, "application/json");
     }
+
+
+    //  string? queryJson = await r_QueryRelayService.GetNextQueryForPcAsync(key, ct);
+    //  if (queryJson == null) return NoContent();
+
+    //  JObject queryObj = JObject.Parse(queryJson);
+    //  string sql = queryObj["QueryString"]?.ToString() ?? "";
+
+    //  if (!string.IsNullOrEmpty(sql))
+    //  {
+    //    await _queryExecutionSemaphore.WaitAsync(ct);
+    //    try
+    //    {
+    //      // 1. קריאה לשירות שמחזיר עכשיו List<Dictionary<string, object>>
+    //      var results = await r_QueryExecutionService.ExecuteAsync(key, sql, ct);
+
+    //      // 2. המרה של הרשימה ל-JToken כדי ש-Newtonsoft יוכל להכניס אותה ל-queryObj
+    //      // זה פותר את שגיאת הקומפילציה CS0029
+    //      queryObj["Results"] = JToken.FromObject(results);
+    //    }
+    //    finally
+    //    {
+    //      _queryExecutionSemaphore.Release();
+    //    }
+    //  }
+
+    //  return Content(queryObj.ToString(), "application/json");
+    //}
 
     //    [HttpGet]
     //    public async Task<IActionResult> GetNextQuery([FromQuery] string key, CancellationToken ct)
