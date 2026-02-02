@@ -5,7 +5,8 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using Newtonsoft.Json.Linq;
 using SqlDetective.Data.Postgres.Query;
-
+using Newtonsoft.Json;       
+using Newtonsoft.Json.Linq;  
 
 namespace SqlDetective.Api.Controllers
 {
@@ -27,7 +28,7 @@ namespace SqlDetective.Api.Controllers
 
         //[HttpPost(Name = "query")]
         [HttpPost]
-        public async Task<IActionResult> SendQuery([FromQuery] string key, [FromBody] JsonElement queryBody, CancellationToken ct)
+        public async Task<IActionResult> SendQuery([FromQuery] string key, [FromBody] JObject queryBody, CancellationToken ct)
         {
             r_Logger.LogInformation("[QueryRelay] [POST] starting SendQuery");
             //r_Logger.LogInformation($"input: {queryJson}");
@@ -37,14 +38,14 @@ namespace SqlDetective.Api.Controllers
                 return BadRequest("Missing Key");
             }
 
-            //if (string.IsNullOrWhiteSpace(queryJson))
-            //{
-            //    return BadRequest("Missing query payload");
-            //}
-            
-            string queryJson = queryBody.GetRawText();
+      //if (string.IsNullOrWhiteSpace(queryJson))
+      //{
+      //    return BadRequest("Missing query payload");
+      //}
 
-            bool ok = await r_QueryRelayService.SaveIncomingQueryAsync(key, queryJson, ct);
+      string queryJson = queryBody.ToString(Formatting.None);
+
+      bool ok = await r_QueryRelayService.SaveIncomingQueryAsync(key, queryJson, ct);
           
             if (!ok)
             {
