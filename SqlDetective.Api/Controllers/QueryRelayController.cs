@@ -15,14 +15,12 @@ namespace SqlDetective.Api.Controllers
     public class QueryRelayController : ControllerBase
     {
         private readonly IQueryRelayService r_QueryRelayService;
-        private readonly IQueryExecutionService r_QueryExecutionService;
         private readonly ILogger<QueryRelayController> r_Logger;
     private static readonly SemaphoreSlim _queryExecutionSemaphore = new SemaphoreSlim(1, 1);
 
-    public QueryRelayController(IQueryRelayService i_QueryRelayService, ILogger<QueryRelayController> i_Logger, IQueryExecutionService i_QueryExecutionService)
+    public QueryRelayController(IQueryRelayService i_QueryRelayService, ILogger<QueryRelayController> i_Logger)
         {
             r_QueryRelayService = i_QueryRelayService;
-            r_QueryExecutionService = i_QueryExecutionService;
             r_Logger = i_Logger;
         }
 
