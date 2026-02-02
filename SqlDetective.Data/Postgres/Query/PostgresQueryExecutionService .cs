@@ -46,15 +46,11 @@ namespace SqlDetective.Data.Postgres.Query
             try
             {
               await using var conn = new NpgsqlConnection(r_ConnectionString);
-
-        r_Logger.LogInformation("[DB] Opening connection...");
-
-        await conn.OpenAsync();
-
-        r_Logger.LogInformation("[DB] Connection opened");
-
-        await using var cmd = new NpgsqlCommand(sql, conn);
-              cmd.CommandTimeout = 10;
+              r_Logger.LogInformation("[DB] Opening connection...");
+              await conn.OpenAsync(ct);
+              
+              await using var cmd = new NpgsqlCommand(sql, conn);
+              cmd.CommandTimeout = 30;
 
               await using var reader = await cmd.ExecuteReaderAsync(ct);
 
@@ -64,8 +60,20 @@ namespace SqlDetective.Data.Postgres.Query
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
                   string name = reader.GetName(i);
-                  var value = reader.IsDBNull(i) ? null : reader.GetValue(i);
-                  obj[name] = value != null ? JToken.FromObject(value) : JValue.CreateNull();
+                  object value = reader.GetValue(i);
+
+                  if (value == null || value == DBNull.Value)
+                  {
+                    obj[name] = JValue.CreateNull();
+                  }
+                  else if (value is Guid guidValue)
+                  {
+                    obj[name] = guidValue.ToString();
+                  }
+                  else
+                  {
+                    obj[name] = JToken.FromObject(value);
+                  }
                 }
                 result.Add(obj);
               }
