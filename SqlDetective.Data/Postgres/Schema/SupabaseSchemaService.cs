@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
+using SqlDetective.Domain.Schema;
 using SqlDetective.Domain.Schema.Data;
 using SqlDetective.Domain.Schema.Service;
 using System;
@@ -14,13 +15,22 @@ namespace SqlDetective.Data.Postgres.Schema
     public class SupabaseSchemaService : ISchemaService
     {
         private readonly ISupabaseSchemaClient r_Supabase;
-        public SupabaseSchemaService(ISupabaseSchemaClient i_Supabase)
+        private readonly ISchemaCache r_Cache;
+    public SupabaseSchemaService(ISupabaseSchemaClient i_Supabase, ISchemaCache i_Cache)
         {
+            r_Cache = i_Cache;
             r_Supabase = i_Supabase;
         }
 
         public async Task<SchemaDto> LoadSchemaAsync(CancellationToken ct = default)
         {
+
+      var cached = r_Cache.GetSchema();
+      if (cached != null)
+      {
+        return cached;
+      }
+      
             SchemaDto schema = new SchemaDto();
             Dictionary<string, TableDto> tablesByName = new Dictionary<string, TableDto>(StringComparer.OrdinalIgnoreCase);
 
@@ -28,7 +38,9 @@ namespace SqlDetective.Data.Postgres.Schema
             await LoadColumnsAsync(schema, tablesByName, ct);
             await LoadForeignKeysAsync(schema, tablesByName, ct);
 
-            return schema;
+      r_Cache.StoreSchema(schema);
+
+      return schema;
         }
 
 
