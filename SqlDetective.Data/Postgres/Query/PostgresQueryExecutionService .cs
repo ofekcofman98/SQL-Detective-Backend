@@ -1,14 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using Npgsql;
 using SqlDetective.Domain.Query.Service;
 using SqlDetective.Domain.Sessions.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SqlDetective.Data.Postgres.Query
 {
@@ -40,7 +34,6 @@ namespace SqlDetective.Data.Postgres.Query
       var session = await r_SessionRepository.GetByKeyAsync(sessionKey, ct);
       if (session == null) throw new InvalidOperationException($"Session {sessionKey} not found");
 
-      // 2. הגדרת רשימה חדשה של מילונים
       var result = new List<Dictionary<string, object>>();
 
       try
@@ -56,18 +49,15 @@ namespace SqlDetective.Data.Postgres.Query
 
         while (await reader.ReadAsync(ct))
         {
-          // 3. עבור כל שורה בבסיס הנתונים, אנחנו יוצרים "מילון" (Dictionary)
           var row = new Dictionary<string, object>();
           for (int i = 0; i < reader.FieldCount; i++)
           {
             string columnName = reader.GetName(i);
             object columnValue = reader.GetValue(i);
 
-            // המרה של ערכי DBNull ל-null רגיל
             row[columnName] = (columnValue == DBNull.Value) ? null : columnValue;
           }
 
-          // לוג בשבילנו ב-Railway כדי לראות שהנתונים יצאו תקינים
           r_Logger.LogInformation("[DB_RESULT_ROW] {RowContent}", string.Join(", ", row.Select(kv => $"{kv.Key}: {kv.Value}")));
 
           result.Add(row);
@@ -76,7 +66,7 @@ namespace SqlDetective.Data.Postgres.Query
       catch (NpgsqlException ex)
       {
         r_Logger.LogError(ex, "SQL Execution Error for session {SessionKey}", sessionKey);
-        // במקרה של שגיאה, נחזיר מילון עם הודעת השגיאה
+
         result.Add(new Dictionary<string, object> { { "error", ex.Message } });
       }
 
