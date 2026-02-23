@@ -1,6 +1,4 @@
 using SqlDetective.Data.InMemory;
-using SqlDetective.Domain.Query.Repository;
-using SqlDetective.Domain.Query.Service;
 using SqlDetective.Domain.Sessions.Generator;
 using SqlDetective.Domain.Sessions.Repository;
 using SqlDetective.Domain.Sessions.Service;
@@ -14,8 +12,6 @@ using SqlDetective.Data.Postgres.Case;
 using SqlDetective.Domain.Cases.Service;
 using SqlDetective.Data.Postgres.Persons;
 using SqlDetective.Domain.Persons.Service;
-using SqlDetective.Data.Postgres.Query;
-using SqlDetective.Domain.Query.Service;
 using SqlDetective.Data.Postgres.Session;
 using SqlDetective.Domain.Sessions;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
@@ -68,15 +64,12 @@ builder.Services.AddCors(options =>
 
 // Repositories (InMemory)
 builder.Services.AddSingleton<ISessionRepository, PostgresSessionRepository>();
-builder.Services.AddSingleton<IRelayQueryRepository, InMemoryRelayQueryRepository>();
 
 // DI
 builder.Services.AddSingleton<IKeyGenerator, RandomKeyGenerator>();
 
 // Domain services
-builder.Services.AddScoped<IQueryRelayService, QueryRelayService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
-builder.Services.AddScoped<IQueryExecutionService, PostgresQueryExecutionService>();
 
 // Cache
 
@@ -89,7 +82,7 @@ builder.Services.AddScoped<IGameProgressService, GameProgressService>();
 builder.Services.AddScoped<IGameProgressRepository>(sp =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
-    string connString = config.GetConnectionString("SqlDetectiveDatabase");
+    string connString = "Host=aws-0-eu-central-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.vwudsbcqlhwajpkmcpsz;Password=SqlDetective123!;Ssl Mode=Require;Trust Server Certificate=true;Pooling=false;";//config.GetConnectionString("SqlDetectiveDatabase");
     var logger = sp.GetRequiredService<ILogger<PostgresGameProgressRepository>>();
 
     Console.WriteLine($"[DB] Using connection string: {connString}");

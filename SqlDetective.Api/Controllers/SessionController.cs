@@ -41,7 +41,7 @@ namespace SqlDetective.Api.Controllers
             );
         }
 
-        [HttpGet(Name = "{key}")]
+        [HttpGet("{key}")]
         public async Task<IActionResult> GetSession(string key, CancellationToken ct)
         {
             r_Logger.LogInformation("[Session] [GET] Starting GetSession");
